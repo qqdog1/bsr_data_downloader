@@ -14,7 +14,6 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.logging.log4j.core.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +31,7 @@ public class BSRRecorderManager {
 	private static String LOG_CONF_PATH = "./config/log4j2.xml";
 	private static String CHROME_DRIVER = "./bsr/driver/chromedriver.exe";
 	private static String CHROME_DOWNLOAD_FOLDER = "chrome_download_folder";
+	private static String BSR_DOWNLOAD_FOLDER = "bsr_download_folder";
 	private String downloadFolder;
 	private final ExecutorService executor = Executors.newFixedThreadPool(WORKER_COUNT);
 	private SimpleDateFormat sdf = TimeUtil.getDateFormat();
@@ -43,8 +43,7 @@ public class BSRRecorderManager {
 	private Properties properties;
 	private String baseFolder;
 	
-	public BSRRecorderManager(String baseFolder) {
-		this.baseFolder = baseFolder;
+	public BSRRecorderManager() {
 		initSysProp();
 		initDate();
 		initConfig();
@@ -74,6 +73,9 @@ public class BSRRecorderManager {
 		} catch (IOException e) {
 			log.error("Init config failed.", e);
 		}
+		
+		downloadFolder = properties.getProperty(CHROME_DOWNLOAD_FOLDER);
+		baseFolder = properties.getProperty(BSR_DOWNLOAD_FOLDER);
 	}
 	
 	private void initFolder() {
@@ -86,8 +88,6 @@ public class BSRRecorderManager {
 				log.error("Create dir failed.", e);
 			}
 		}
-		
-		downloadFolder = properties.getProperty(CHROME_DOWNLOAD_FOLDER);
 	}
 	
 	private void initProducts() {
@@ -156,6 +156,6 @@ public class BSRRecorderManager {
 	}
 	
 	public static void main(String[] s) {
-		new BSRRecorderManager(s[0]);
+		new BSRRecorderManager();
 	}
 }
