@@ -32,9 +32,7 @@ Then just run this program.
 ## 2.匯入憑證  
 * 打開command line  
 * 到JAVA_HOME/jre/lib/security  
-* 輸入下列指令匯入憑證 -file 後方請指定前面下載的憑證
-    keytool -import -alias twse -keystore cacerts -file D:\twse.cer
-    keytool -import -alias bsr -keystore cacerts -file D:\bsr.cer
+* 輸入下列指令匯入憑證 -file 後方請指定前面下載的憑證  
 
-
-    
+      keytool -import -alias twse -keystore cacerts -file D:\twse.cer
+      keytool -import -alias bsr -keystore cacerts -file D:\bsr.cer 
