@@ -8,7 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
@@ -16,6 +18,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,16 +35,14 @@ public class BuySellRecorder implements Runnable {
 	private String dir;
 	private int total;
 	private final int workerId;
-	private final String chromeDownloadFolder;
 	
-	public BuySellRecorder(int workerId, List<String> lst, String chromeDownloadFolder, String dir) {
+	public BuySellRecorder(int workerId, List<String> lst, String dir) {
 		this.lst = lst;
 		total = lst.size();
 		for(String product : lst) {
 			lstRemain.add(product);
 		}
 		this.workerId = workerId;
-		this.chromeDownloadFolder = chromeDownloadFolder;
 		this.dir = dir;
 		captchaSolver = new TWSECaptchaSolver();
 	}
@@ -58,18 +59,6 @@ public class BuySellRecorder implements Runnable {
 		downloadCaptcha();
 		String ans = captchaSolver.solve(captchaPath);
 		downloadFile(product, ans);
-	}
-	
-	private void moveFile(String product) {
-		String productFile = product + ".csv";
-		Path filePath = Paths.get(chromeDownloadFolder, productFile);
-		try {
-			if(Files.exists(filePath)) {
-				Files.move(filePath, Paths.get(dir, productFile));
-			}
-		} catch (IOException e) {
-			log.error("Move file failed.", e);
-		}
 	}
 	
 	private void downloadFile(String product, String ans) throws Exception {
@@ -115,10 +104,6 @@ public class BuySellRecorder implements Runnable {
 			}
 		}
 		
-		for(String product : lst) {
-			moveFile(product);
-		}
-		
 		lst.clear();
 		for(String product : lstRemain) {
 			lst.add(product);
@@ -140,7 +125,12 @@ public class BuySellRecorder implements Runnable {
 	}
 	
 	private void init() {
-		webDriver = new ChromeDriver();
+		ChromeOptions options = new ChromeOptions();
+		options.setHeadless(true);
+		Map<String, Object> chromePrefs = new HashMap<String, Object>();
+		chromePrefs.put("download.default_directory", dir);
+		options.setExperimentalOption("prefs", chromePrefs);
+		webDriver = new ChromeDriver(options);
 		Path path = Paths.get("./bsr/", String.valueOf(workerId));
 		if(!Files.exists(path)) {
 			try {

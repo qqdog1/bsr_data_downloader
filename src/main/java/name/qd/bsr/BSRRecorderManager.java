@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,9 +31,7 @@ public class BSRRecorderManager {
 	private static String CONF_PATH = "./config/bsr.conf";
 	private static String LOG_CONF_PATH = "./config/log4j2.xml";
 	private static String CHROME_DRIVER = "./bsr/driver/chromedriver.exe";
-	private static String CHROME_DOWNLOAD_FOLDER = "chrome_download_folder";
 	private static String BSR_DOWNLOAD_FOLDER = "bsr_download_folder";
-	private String downloadFolder;
 	private final ExecutorService executor = Executors.newFixedThreadPool(WORKER_COUNT);
 	private SimpleDateFormat sdf = TimeUtil.getDateFormat();
 	private Date date;
@@ -50,14 +49,13 @@ public class BSRRecorderManager {
 		dataSource = DataSourceFactory.getInstance().getDataSource(Exchange.TWSE, baseFolder);
 		initFolder();
 		initProducts();
-		cleanDownloadFolder();
 		initWorkers();
 	}
 	
 	private void initDate() {
 		date = TimeUtil.getToday();
 //		try {
-//			date = TimeUtil.getDateFormat().parse("20191217");
+//			date = TimeUtil.getDateFormat().parse("20200102");
 //		} catch (ParseException e) {
 //			e.printStackTrace();
 //		}
@@ -74,7 +72,6 @@ public class BSRRecorderManager {
 			log.error("Init config failed.", e);
 		}
 		
-		downloadFolder = properties.getProperty(CHROME_DOWNLOAD_FOLDER);
 		baseFolder = properties.getProperty(BSR_DOWNLOAD_FOLDER);
 	}
 	
@@ -134,24 +131,9 @@ public class BSRRecorderManager {
 		log = LoggerFactory.getLogger(BSRRecorderManager.class);
 	}
 	
-	private void cleanDownloadFolder() {
-		try {
-			Files.list(Paths.get(downloadFolder)).forEach(
-					p -> {
-						try {
-							Files.delete(p);
-						} catch (IOException e) {
-							log.error("Delete {} failed.", p.toUri().toString(), e);
-						}
-					});
-		} catch (IOException e) {
-			log.error("Clean all file in download folder failed.", e);
-		}
-	}
-	
 	private void initWorkers() {
 		for(int i = 0 ; i < WORKER_COUNT ; i++) {
-			executor.execute(new BuySellRecorder(i, lstWorkerProducts.get(i), downloadFolder, targetFolder));
+			executor.execute(new BuySellRecorder(i, lstWorkerProducts.get(i), targetFolder));
 		}
 	}
 	
