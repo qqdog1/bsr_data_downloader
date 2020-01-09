@@ -135,6 +135,7 @@ public class BSRRecorderManager {
 		for(int i = 0 ; i < WORKER_COUNT ; i++) {
 			executor.execute(new BuySellRecorder(i, lstWorkerProducts.get(i), targetFolder));
 		}
+		executor.shutdown();
 	}
 	
 	public static void main(String[] s) {
