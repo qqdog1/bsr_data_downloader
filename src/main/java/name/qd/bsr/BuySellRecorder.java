@@ -145,5 +145,6 @@ public class BuySellRecorder implements Runnable {
 	
 	private void end() {
 		captchaSolver.end();
+		webDriver.close();
 	}
 }
