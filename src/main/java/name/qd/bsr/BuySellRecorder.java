@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
 
@@ -35,8 +36,9 @@ public class BuySellRecorder implements Runnable {
 	private String dir;
 	private int total;
 	private final int workerId;
+	private CountDownLatch countDownLatch;
 	
-	public BuySellRecorder(int workerId, List<String> lst, String dir) {
+	public BuySellRecorder(int workerId, List<String> lst, String dir, CountDownLatch countDownLatch) {
 		this.lst = lst;
 		total = lst.size();
 		for(String product : lst) {
@@ -45,6 +47,7 @@ public class BuySellRecorder implements Runnable {
 		this.workerId = workerId;
 		this.dir = dir;
 		captchaSolver = new TWSECaptchaSolver();
+		this.countDownLatch = countDownLatch;
 	}
 	
 	@Override
@@ -53,6 +56,7 @@ public class BuySellRecorder implements Runnable {
 		startDownload();
 		end();
 		log.info("{} worker done. {}", workerId, total);
+		countDownLatch.countDown();
 	}
 	
 	private void downloadData(String product) throws Exception {

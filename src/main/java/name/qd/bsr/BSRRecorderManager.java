@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +25,7 @@ import name.qd.analysis.dataSource.DataSourceFactory;
 import name.qd.analysis.dataSource.TWSE.utils.TWSEPathUtil;
 import name.qd.analysis.dataSource.vo.ProductClosingInfo;
 import name.qd.analysis.utils.TimeUtil;
+import name.qd.bsr.utils.ZipUtils;
 
 public class BSRRecorderManager {
 	private Logger log;
@@ -41,6 +43,8 @@ public class BSRRecorderManager {
 	private List<List<String>> lstWorkerProducts;
 	private Properties properties;
 	private String baseFolder;
+	private CountDownLatch countDownLatch = new CountDownLatch(WORKER_COUNT);
+	private ZipUtils zipUtils;
 	
 	public BSRRecorderManager() {
 		initSysProp();
@@ -50,15 +54,16 @@ public class BSRRecorderManager {
 		initFolder();
 		initProducts();
 		initWorkers();
+		zipFolder();
 	}
 	
 	private void initDate() {
 		date = TimeUtil.getToday();
-//		try {
-//			date = TimeUtil.getDateFormat().parse("20200102");
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			date = TimeUtil.getDateFormat().parse("20200110");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		log.info("{}", date);
 	}
 	
@@ -133,9 +138,20 @@ public class BSRRecorderManager {
 	
 	private void initWorkers() {
 		for(int i = 0 ; i < WORKER_COUNT ; i++) {
-			executor.execute(new BuySellRecorder(i, lstWorkerProducts.get(i), targetFolder));
+			executor.execute(new BuySellRecorder(i, lstWorkerProducts.get(i), targetFolder, countDownLatch));
 		}
 		executor.shutdown();
+	}
+	
+	private void zipFolder() {
+		zipUtils = new ZipUtils();
+		try {
+			countDownLatch.await();
+		} catch (InterruptedException e) {
+			log.error("", e);
+		}
+
+		zipUtils.zipFolder(targetFolder);
 	}
 	
 	public static void main(String[] s) {
