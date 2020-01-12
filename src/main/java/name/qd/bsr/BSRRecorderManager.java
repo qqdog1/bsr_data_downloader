@@ -25,6 +25,7 @@ import name.qd.analysis.dataSource.DataSourceFactory;
 import name.qd.analysis.dataSource.TWSE.utils.TWSEPathUtil;
 import name.qd.analysis.dataSource.vo.ProductClosingInfo;
 import name.qd.analysis.utils.TimeUtil;
+import name.qd.bsr.utils.GoogleDriveUploader;
 import name.qd.bsr.utils.ZipUtils;
 
 public class BSRRecorderManager {
@@ -34,6 +35,7 @@ public class BSRRecorderManager {
 	private static String LOG_CONF_PATH = "./config/log4j2.xml";
 	private static String CHROME_DRIVER = "./bsr/driver/chromedriver.exe";
 	private static String BSR_DOWNLOAD_FOLDER = "bsr_download_folder";
+	private static String GOOGLE_API_TOKEN = "google_api_token";
 	private final ExecutorService executor = Executors.newFixedThreadPool(WORKER_COUNT);
 	private SimpleDateFormat sdf = TimeUtil.getDateFormat();
 	private Date date;
@@ -45,6 +47,8 @@ public class BSRRecorderManager {
 	private String baseFolder;
 	private CountDownLatch countDownLatch = new CountDownLatch(WORKER_COUNT);
 	private ZipUtils zipUtils;
+	private GoogleDriveUploader googleDriveUploader;
+	private String token;
 	
 	public BSRRecorderManager() {
 		initSysProp();
@@ -55,6 +59,7 @@ public class BSRRecorderManager {
 		initProducts();
 		initWorkers();
 		zipFolder();
+		uploadFile();
 	}
 	
 	private void initDate() {
@@ -78,6 +83,7 @@ public class BSRRecorderManager {
 		}
 		
 		baseFolder = properties.getProperty(BSR_DOWNLOAD_FOLDER);
+		token = properties.getProperty(GOOGLE_API_TOKEN);
 	}
 	
 	private void initFolder() {
@@ -152,6 +158,11 @@ public class BSRRecorderManager {
 		}
 
 		zipUtils.zipFolder(targetFolder);
+	}
+	
+	private void uploadFile() {
+		googleDriveUploader = new GoogleDriveUploader(token);
+		googleDriveUploader.uploadZip(targetFolder + ".zip");
 	}
 	
 	public static void main(String[] s) {
