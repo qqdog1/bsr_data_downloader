@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +34,7 @@ public class BSRRecorderManager {
 	private static String LOG_CONF_PATH = "./config/log4j2.xml";
 	private static String CHROME_DRIVER = "./bsr/driver/chromedriver.exe";
 	private static String BSR_DOWNLOAD_FOLDER = "bsr_download_folder";
-	private static String GOOGLE_API_TOKEN = "google_api_token";
+	private static String CREDENTIALS_FILE_PATH = "./config/credentials.json";
 	private final ExecutorService executor = Executors.newFixedThreadPool(WORKER_COUNT);
 	private SimpleDateFormat sdf = TimeUtil.getDateFormat();
 	private Date date;
@@ -48,7 +47,6 @@ public class BSRRecorderManager {
 	private CountDownLatch countDownLatch = new CountDownLatch(WORKER_COUNT);
 	private ZipUtils zipUtils;
 	private GoogleDriveUploader googleDriveUploader;
-	private String token;
 	
 	public BSRRecorderManager() {
 		initSysProp();
@@ -60,15 +58,16 @@ public class BSRRecorderManager {
 		initWorkers();
 		zipFolder();
 		uploadFile();
+		
 	}
 	
 	private void initDate() {
 		date = TimeUtil.getToday();
-		try {
-			date = TimeUtil.getDateFormat().parse("20200110");
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			date = TimeUtil.getDateFormat().parse("20200114");
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
 		log.info("{}", date);
 	}
 	
@@ -83,7 +82,6 @@ public class BSRRecorderManager {
 		}
 		
 		baseFolder = properties.getProperty(BSR_DOWNLOAD_FOLDER);
-		token = properties.getProperty(GOOGLE_API_TOKEN);
 	}
 	
 	private void initFolder() {
@@ -161,8 +159,14 @@ public class BSRRecorderManager {
 	}
 	
 	private void uploadFile() {
-		googleDriveUploader = new GoogleDriveUploader(token);
-		googleDriveUploader.uploadZip(targetFolder + ".zip");
+		googleDriveUploader = new GoogleDriveUploader(CREDENTIALS_FILE_PATH);
+		if(googleDriveUploader.uploadFile(targetFolder + ".zip")) {
+			// TODO: send message to line bot
+			log.info("Upload file success!");
+		} else {
+			// TODO: send message to line bot
+			log.error("Upload file to google drive failed.");
+		}
 	}
 	
 	public static void main(String[] s) {
