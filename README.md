@@ -11,7 +11,7 @@ Modify log4j2.xml file if you want.
 Go to https://developers.google.com/drive/api/v3/quickstart/java
 ![](/pic/g01.jpg)  
 ![](/pic/g02.jpg)  
-Put the on ./config folder.
+Put the in ./config folder.  
 
 ## 4. Then just run this program.
 
