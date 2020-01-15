@@ -3,6 +3,10 @@
 # Before start  
 ## 1. Set bsr.conf file.  
 bsr_download_folder=where you want to put your files  
+google_drive_folder_id=your google drive folder id that you want to upload your file to.  
+
+![](/pic/fid.jpg)  
+you can find your folder id there
 
 ## 2. Modify log4j2.xml  
 Modify log4j2.xml file if you want.  
