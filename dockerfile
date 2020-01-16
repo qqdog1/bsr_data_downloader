@@ -7,4 +7,4 @@ COPY src /workspace/src
 COPY bsr /workspace/bsr
 COPY config /workspace/config
 COPY settings.xml /workspace
-RUN mvn -f pom.xml clean package
+RUN mvn -f pom.xml clean package -s /workspace/settings.xml -Dgithub.user=user -Dgithub.password=token
