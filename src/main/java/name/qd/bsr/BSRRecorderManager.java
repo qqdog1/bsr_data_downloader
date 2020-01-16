@@ -34,6 +34,7 @@ public class BSRRecorderManager {
 	private static String LOG_CONF_PATH = "./config/log4j2.xml";
 	private static String CHROME_DRIVER = "./bsr/driver/chromedriver.exe";
 	private static String BSR_DOWNLOAD_FOLDER = "bsr_download_folder";
+	private static String GOOGLE_DRIVE_FOLDER_ID = "google_drive_folder_id";
 	private static String CREDENTIALS_FILE_PATH = "./config/credentials.json";
 	private final ExecutorService executor = Executors.newFixedThreadPool(WORKER_COUNT);
 	private SimpleDateFormat sdf = TimeUtil.getDateFormat();
@@ -47,6 +48,7 @@ public class BSRRecorderManager {
 	private CountDownLatch countDownLatch = new CountDownLatch(WORKER_COUNT);
 	private ZipUtils zipUtils;
 	private GoogleDriveUploader googleDriveUploader;
+	private String folderId;
 	
 	public BSRRecorderManager() {
 		initSysProp();
@@ -82,6 +84,7 @@ public class BSRRecorderManager {
 		}
 		
 		baseFolder = properties.getProperty(BSR_DOWNLOAD_FOLDER);
+		folderId = properties.getProperty(GOOGLE_DRIVE_FOLDER_ID);
 	}
 	
 	private void initFolder() {
@@ -160,7 +163,7 @@ public class BSRRecorderManager {
 	
 	private void uploadFile() {
 		googleDriveUploader = new GoogleDriveUploader(CREDENTIALS_FILE_PATH);
-		if(googleDriveUploader.uploadFile(targetFolder + ".zip")) {
+		if(googleDriveUploader.uploadFile(targetFolder + ".zip", folderId)) {
 			// TODO: send message to line bot
 			log.info("Upload file success!");
 		} else {

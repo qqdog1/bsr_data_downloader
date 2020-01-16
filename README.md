@@ -1,12 +1,23 @@
 ![](https://github.com/qqdog1/bsr_data_downloader/workflows/Java%20CI/badge.svg)
 
-# 1. Before start  
-Set bsr.conf file.  
+# Before start  
+## 1. Set bsr.conf file.  
 bsr_download_folder=where you want to put your files  
+google_drive_folder_id=your google drive folder id that you want to upload your file to.  
 
+![](/pic/fid.jpg)  
+you can find your folder id there
+
+## 2. Modify log4j2.xml  
 Modify log4j2.xml file if you want.  
-  
-Then just run this program.
+
+## 3. Download google api credentials
+Go to https://developers.google.com/drive/api/v3/quickstart/java
+![](/pic/g01.jpg)  
+![](/pic/g02.jpg)  
+Put the credentila file in ./config folder.  
+
+## 4. Then just run this program.
 
 # 遇到 "PKIX path building failed"
 ## 1.下載憑證

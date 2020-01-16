@@ -67,15 +67,18 @@ public class GoogleDriveUploader {
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }
     
-    public boolean uploadFile(String filePath) {
+    public boolean uploadFile(String filePath, String folderId) {
+    	System.out.println(folderId);
     	Path path = Paths.get(filePath);
     	
     	File file = new File();
         file.setName(path.getFileName().toString());
         file.setMimeType("application/zip");
-        List<String> lstFolderId = new ArrayList<>();
-        lstFolderId.add("1pJZZ33Biqlcs8oWOqIplDPvYe1nbmuHL");
-        file.setParents(lstFolderId);
+        if(!"".equals(folderId)) {
+        	List<String> lstFolderId = new ArrayList<>();
+            lstFolderId.add(folderId);
+            file.setParents(lstFolderId);
+        }
         
         java.io.File fileContent = new java.io.File(filePath);
         FileContent mediaContent = new FileContent("application/zip", fileContent);
