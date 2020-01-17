@@ -25,6 +25,7 @@ import name.qd.analysis.dataSource.TWSE.utils.TWSEPathUtil;
 import name.qd.analysis.dataSource.vo.ProductClosingInfo;
 import name.qd.analysis.utils.TimeUtil;
 import name.qd.bsr.utils.GoogleDriveUploader;
+import name.qd.bsr.utils.LineNotifyUtils;
 import name.qd.bsr.utils.ZipUtils;
 
 public class BSRRecorderManager {
@@ -35,7 +36,14 @@ public class BSRRecorderManager {
 	private static String CHROME_DRIVER = "./bsr/driver/chromedriver.exe";
 	private static String BSR_DOWNLOAD_FOLDER = "bsr_download_folder";
 	private static String GOOGLE_DRIVE_FOLDER_ID = "google_drive_folder_id";
+	private static String LINE_NOTIFY_TOKEN = "line_notify_token";
 	private static String CREDENTIALS_FILE_PATH = "./config/credentials.json";
+	
+	private CountDownLatch countDownLatch = new CountDownLatch(WORKER_COUNT);
+	private ZipUtils zipUtils;
+	private GoogleDriveUploader googleDriveUploader;
+	private LineNotifyUtils lineNotifyUtils;
+	
 	private final ExecutorService executor = Executors.newFixedThreadPool(WORKER_COUNT);
 	private SimpleDateFormat sdf = TimeUtil.getDateFormat();
 	private Date date;
@@ -45,22 +53,25 @@ public class BSRRecorderManager {
 	private List<List<String>> lstWorkerProducts;
 	private Properties properties;
 	private String baseFolder;
-	private CountDownLatch countDownLatch = new CountDownLatch(WORKER_COUNT);
-	private ZipUtils zipUtils;
-	private GoogleDriveUploader googleDriveUploader;
 	private String folderId;
+	private String lineNotifyToken;
 	
 	public BSRRecorderManager() {
 		initSysProp();
 		initDate();
 		initConfig();
+		lineNotifyUtils = new LineNotifyUtils(lineNotifyToken);
 		dataSource = DataSourceFactory.getInstance().getDataSource(Exchange.TWSE, baseFolder);
 		initFolder();
 		initProducts();
+		
+		lineNotifyUtils.sendMessage("開始抓起來:" + total);
+		
 		initWorkers();
 		zipFolder();
 		uploadFile();
 		
+		lineNotifyUtils.sendMessage("抓好並上傳至GOOGLE");
 	}
 	
 	private void initDate() {
@@ -85,6 +96,7 @@ public class BSRRecorderManager {
 		
 		baseFolder = properties.getProperty(BSR_DOWNLOAD_FOLDER);
 		folderId = properties.getProperty(GOOGLE_DRIVE_FOLDER_ID);
+		lineNotifyToken = properties.getProperty(LINE_NOTIFY_TOKEN);
 	}
 	
 	private void initFolder() {
