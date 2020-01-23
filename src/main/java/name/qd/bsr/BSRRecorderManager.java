@@ -176,10 +176,8 @@ public class BSRRecorderManager {
 	private void uploadFile() {
 		googleDriveUploader = new GoogleDriveUploader(CREDENTIALS_FILE_PATH);
 		if(googleDriveUploader.uploadFile(targetFolder + ".zip", folderId)) {
-			// TODO: send message to line bot
 			log.info("Upload file success!");
 		} else {
-			// TODO: send message to line bot
 			log.error("Upload file to google drive failed.");
 		}
 	}
