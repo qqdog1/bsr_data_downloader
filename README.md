@@ -46,3 +46,5 @@ Put the credentila file in ./config folder.
 
       keytool -import -alias twse -keystore cacerts -file D:\twse.cer
       keytool -import -alias bsr -keystore cacerts -file D:\bsr.cer 
+      
+* keytool 預設密碼為 changeit
