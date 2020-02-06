@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,7 +66,7 @@ public class BSRRecorderManager {
 		initFolder();
 		initProducts();
 		
-		lineNotifyUtils.sendMessage("開始抓起來:" + total);
+		lineNotifyUtils.sendMessage(TimeUtil.getDateFormat().format(date) + " 開始抓起來:" + total);
 		
 		initWorkers();
 		zipFolder();
@@ -77,7 +78,7 @@ public class BSRRecorderManager {
 	private void initDate() {
 		date = TimeUtil.getToday();
 //		try {
-//			date = TimeUtil.getDateFormat().parse("20200114");
+//			date = TimeUtil.getDateFormat().parse("20200205");
 //		} catch (ParseException e) {
 //			e.printStackTrace();
 //		}
