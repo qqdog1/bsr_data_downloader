@@ -24,7 +24,7 @@ import name.qd.analysis.dataSource.DataSource;
 import name.qd.analysis.dataSource.DataSourceFactory;
 import name.qd.analysis.dataSource.TWSE.utils.TWSEPathUtil;
 import name.qd.analysis.dataSource.vo.ProductClosingInfo;
-import name.qd.analysis.utils.TimeUtil;
+import name.qd.analysis.utils.TimeUtils;
 import name.qd.bsr.utils.GoogleDriveUploader;
 import name.qd.bsr.utils.LineNotifyUtils;
 import name.qd.bsr.utils.ZipUtils;
@@ -46,7 +46,7 @@ public class BSRRecorderManager {
 	private LineNotifyUtils lineNotifyUtils;
 	
 	private final ExecutorService executor = Executors.newFixedThreadPool(WORKER_COUNT);
-	private SimpleDateFormat sdf = TimeUtil.getDateFormat();
+	private SimpleDateFormat sdf = TimeUtils.getDateFormat();
 	private Date date;
 	private DataSource dataSource;
 	private String targetFolder;
@@ -66,7 +66,7 @@ public class BSRRecorderManager {
 		initFolder();
 		initProducts();
 		
-		lineNotifyUtils.sendMessage(TimeUtil.getDateFormat().format(date) + " 開始抓起來:" + total);
+		lineNotifyUtils.sendMessage(TimeUtils.getDateFormat().format(date) + " 開始抓起來:" + total);
 		
 		initWorkers();
 		zipFolder();
@@ -76,7 +76,7 @@ public class BSRRecorderManager {
 	}
 	
 	private void initDate() {
-		date = TimeUtil.getToday();
+		date = TimeUtils.getToday();
 //		try {
 //			date = TimeUtil.getDateFormat().parse("20200205");
 //		} catch (ParseException e) {
