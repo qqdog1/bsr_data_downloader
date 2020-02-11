@@ -71,8 +71,7 @@ public class BSRRecorderManager {
 		initWorkers();
 		zipFolder();
 		uploadFile();
-		
-		lineNotifyUtils.sendMessage("抓好並上傳至GOOGLE");
+		removeZip();
 	}
 	
 	private void initDate() {
@@ -178,8 +177,18 @@ public class BSRRecorderManager {
 		googleDriveUploader = new GoogleDriveUploader(CREDENTIALS_FILE_PATH);
 		if(googleDriveUploader.uploadFile(targetFolder + ".zip", folderId)) {
 			log.info("Upload file success!");
+			lineNotifyUtils.sendMessage("抓好並上傳至GOOGLE");
 		} else {
 			log.error("Upload file to google drive failed.");
+			lineNotifyUtils.sendMessage("上傳GOOGLE失敗");
+		}
+	}
+	
+	private void removeZip() {
+		try {
+			Files.delete(Paths.get(targetFolder + ".zip"));
+		} catch (IOException e) {
+			log.error("Remove file failed.");
 		}
 	}
 	
