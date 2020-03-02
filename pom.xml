@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>name.qd</groupId>
 			<artifactId>technical-analysis-core</artifactId>
-			<version>1.0.7</version>
+			<version>1.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
