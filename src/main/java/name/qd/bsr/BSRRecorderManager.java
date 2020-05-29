@@ -76,11 +76,11 @@ public class BSRRecorderManager {
 	
 	private void initDate() {
 		date = TimeUtils.getToday();
-//		try {
-//			date = TimeUtil.getDateFormat().parse("20200205");
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			date = TimeUtils.getDateFormat().parse("20200528");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		log.info("{}", date);
 	}
 	
